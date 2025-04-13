@@ -2,6 +2,9 @@
 # 29 May 2024
 # Carly Bauer
 
+install.packages("factoextra")
+install.packages("FactoMineR")
+install.packages("ggfortify")
 
 rm(list=ls(all=TRUE))
 library(dplyr)
@@ -13,8 +16,10 @@ library(ggplot2)
 library(readr)
 library(factoextra) # for visualizing PCA 
 library(stats) # prcomp to perform PCA
+library(FactoMineR)
+library(ggfortify)
 
-# load metal data using version through 2023 because not including 2024 in MS
+# load metal data from EDI using version through 2023 because not including 2024 in MS
 metals <- read_csv("https://pasta.lternet.edu/package/data/eml/edi/455/8/9c8c61b003923f4f03ebfe55cea8bbfd")
 
 # this gets rid of any values that we flagged as abnormally high in the data
@@ -79,7 +84,43 @@ fviz_cos2(PCAmetals, choice = "var", axes =1:2 )
  library(ggplot2)
  pca_var_plot + ggtitle("PCA BVR Metal Concentrations 2020 - 2023")
 
+##################
+ #CCC's attempt at an NMDS, following the excellent tutorial here: https://jonlefcheck.net/2012/10/24/nmds-tutorial-in-r/
+ install.packages("vegan")
+ library(vegan)
+ 
+ FCRmetals1 <- metals %>%
+   mutate(Year = year(DateTime)) %>% 
+   filter(Reservoir == "FCR", Site == 50, Year >= 2020) %>%
+   select(Reservoir, starts_with("T")) %>%
+   #mutate(across(starts_with("T"), log10)) %>% # log10 concentrations to help linearity, not assumption just helps increase strength
+   na.omit()  # Remove rows with any NA values
+ 
+ # save new df that only includes BVR site 50 data and only T metal concentrations 
+ BVRmetals1 <- metals %>%
+   mutate(Year = year(DateTime)) %>% 
+   filter(Reservoir == "BVR", Site == 50, Year >= 2020) %>%
+   select(Reservoir, starts_with("T")) %>%
+   #mutate(across(starts_with("T"), log10)) %>% # log10 concentrations to help linearity, not assumption just helps increase strength
+   na.omit()  # Remove rows with any NA values
+ 
+ data1 <- merge(BVRmetals1, FCRmetals1, all.x=T, all.y=T)  
 
+original_rownames <- data1$Reservoir
+
+data2 = data1 |> 
+  select(starts_with("T"))
+ 
+ example_NMDS=metaMDS(data2, 
+                      k=2, distance="bray")
+ stressplot(example_NMDS)
+ plot(example_NMDS)
+
+#I JUST RAN OUT OF TIME, BUT CARLY THE NEXT STEP IS TO COLOR THE POINTS BY RESERVOIR-
+# YOU CAN CLEARLY SEE CLUSTERING OF FCR VS BVR HERE. YOU CAN THEN ALSO COMPARE THE POLYGONS
+ #SIMILAR TO WHAT HEATHER DID STATISTICALLY.
+ 
+ 
 
 ## CEB stops here, stuff below was just play when first figuring out PCA
  #::::::::::::::::::::::::::::::::::::::::::::::::::::::
