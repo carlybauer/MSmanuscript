@@ -119,7 +119,103 @@ data2 = data1 |>
 #I JUST RAN OUT OF TIME, BUT CARLY THE NEXT STEP IS TO COLOR THE POINTS BY RESERVOIR-
 # YOU CAN CLEARLY SEE CLUSTERING OF FCR VS BVR HERE. YOU CAN THEN ALSO COMPARE THE POLYGONS
  #SIMILAR TO WHAT HEATHER DID STATISTICALLY.
+  # Extract site scores and add Reservoir info
+ nmds_scores <- as.data.frame(scores(example_NMDS, display = "sites"))
+ nmds_scores$Reservoir <- original_rownames  # your saved group info
  
+ # # Plot with ggplot2
+ ggplot(nmds_scores, aes(x = NMDS1, y = NMDS2, color = Reservoir)) +
+   geom_point(size = 3, alpha = 0.7) +
+   stat_ellipse(geom = "polygon", aes(fill = Reservoir), alpha = 0.2) +
+ geom_point(data = centroids, aes(x = NMDS1, y = NMDS2, color = "black"),  # Add centroids
+            size = 5, shape = 4, stroke = 2) +  # shape 4 = X
+   theme_minimal() +
+   labs(title = "NMDS of Metal Concentrations by Reservoir",
+        x = "NMDS1", y = "NMDS2") +
+   scale_colour_manual(values = c("FCR" = '#56B4E9', "BVR" = '#D55E00')) +
+   scale_fill_manual(values = c("FCR" = '#56B4E9', "BVR" = '#D55E00')) +
+   theme(legend.position = "right")
+ 
+ 
+ # Save grouping variable (Reservoir) for plotting
+ groups <- original_rownames  # should be same length as nrow(data2)
+ 
+ # Plot
+ groups <- as.character(data1$Reservoir)
+ ordiplot(example_NMDS, type = "n")
+ ordihull(example_NMDS, groups = groups, draw = "polygon", col = c("#D55E00", "#56B4E9"), label = TRUE)
+ points(example_NMDS, display = "sites", col = ifelse(groups == "FCR", "#56B4E9", "#D55E00"), pch = 16) # for sites
+ # Add centroids
+ points(centroids$NMDS1, centroids$NMDS2, 
+        pch = 4, cex = 1.5, lwd = 1, 
+        col = c("black"))  # Adjust to match order
+ 
+
+## CALCULATE CENTROID FOR EACH RESERVOIR
+ #gives (x,y) coordinates for each group's center
+centroids <- aggregate(cbind(NMDS1, NMDS2) ~ Reservoir, data = nmds_scores, FUN = mean)
+print(centroids) 
+ 
+
+## CALCULATE EUCLIDEAN DISTANCE BETWEEN TWO CENTROIDS
+# Use dist() if just two groups:
+centroid_distance <- dist(centroids[, c("NMDS1", "NMDS2")])
+print(centroid_distance)
+
+### FOLLOWING SIMILAR TO HEATHER
+## not sure what method is right
+# Ensure 'Reservoir' is a character vector
+data1$Reservoir <- as.character(data1$Reservoir)
+
+var_results <- data.frame(
+  fcr_disp = rep(NA, 500),
+  bvr_disp = rep(NA, 500),
+  centroid_dist = rep(NA, 500)
+)
+
+set.seed(42)
+
+for (i in 1:500) {
+  
+  sub_data <- data1 %>%
+    group_by(Reservoir) %>%
+    slice_sample(n = 10) %>%
+    ungroup()
+  
+  sub_metals <- sub_data %>% select(starts_with("T"))
+  sub_metals_hel <- decostand(sub_metals, method = "hellinger")
+  sub_euc <- vegdist(sub_metals_hel, method = "euclidean")
+  
+  disp <- betadisper(sub_euc, group = sub_data$Reservoir, type = "centroid")
+  
+  # Save distances to centroid for each group
+  dist_df <- data.frame(Reservoir = sub_data$Reservoir,
+                        dist = disp$distances)
+  
+  var_results$fcr_disp[i] <- mean(dist_df$dist[dist_df$Reservoir == "FCR"])
+  var_results$bvr_disp[i] <- mean(dist_df$dist[dist_df$Reservoir == "BVR"])
+  
+  # Distance between centroids
+  var_results$centroid_dist[i] <- dist(disp$centroids)[1]
+}
+
+# Compare dispersion
+wilcox.test(var_results$fcr_disp, var_results$bvr_disp)
+## p-value < 2.2e-16 
+
+#summarize/visualize
+disp_long <- var_results %>%
+  select(fcr_disp, bvr_disp) %>%
+  pivot_longer(everything(), names_to = "Reservoir", values_to = "Dispersion")
+
+ggboxplot(disp_long, x = "Reservoir", y = "Dispersion", fill = "Reservoir")
+
+#Plot centroid distances
+ggplot(var_results, aes(x = centroid_dist)) +
+  geom_histogram(binwidth = 0.01, fill = "#5E435D") +
+  labs(x = "Distance between centroids (FCR vs BVR)",
+       y = "Frequency",
+       title = "Bootstrapped centroid distances")
  
 
 ## CEB stops here, stuff below was just play when first figuring out PCA
