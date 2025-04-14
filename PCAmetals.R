@@ -222,7 +222,38 @@ ggplot(var_results, aes(x = centroid_dist)) +
        y = "Frequency",
        title = "Bootstrapped centroid distances")
 
+##### NOW DO IT FOR OBSERVING METAL PATTERNS COMBINED
+# Combine both
+data_all <- data1 |> 
+  select(starts_with("T"))
 
+# Transpose to analyze metal relationships
+# This makes rows = metals, columns = samples
+# Transpose and preserve metal names
+data_transposed <- as.data.frame(t(data_all))
+data_transposed$Metal <- rownames(data_transposed)  # Save rownames (metal names) as a column
+#rownames(data_transposed) <- NULL  # Optional: clear rownames
+
+# Optional: log-transform to help linearity (commented out if not needed)
+# data_transposed <- log10(data_transposed + 1e-6)
+
+# Compute distance matrix among metals
+cor_dist <- vegdist(data_transposed |> select(-Metal), method = "bray")
+
+# Run NMDS on transposed data
+metal_NMDS <- metaMDS(cor_dist, k = 2, trymax = 20)
+
+# Extract scores (now each point is a metal)
+metal_scores <- as.data.frame(scores(metal_NMDS, display = "sites"))
+metal_scores$Metal <- data_transposed$Metal
+
+# Plot
+ggplot(metal_scores, aes(x = NMDS1, y = NMDS2, label = Metal)) +
+  geom_point(color = "darkblue", size = 4) +
+  geom_text(vjust = -1.2, hjust = 0.5, size = 3) +
+  theme_minimal() +
+  labs(title = "NMDS of Metal Similarity",
+       x = "NMDS1", y = "NMDS2")
  
 
 ## CEB stops here, stuff below was just play when first figuring out PCA
