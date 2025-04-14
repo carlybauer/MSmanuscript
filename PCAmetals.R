@@ -234,9 +234,6 @@ data_transposed <- as.data.frame(t(data_all))
 data_transposed$Metal <- rownames(data_transposed)  # Save rownames (metal names) as a column
 #rownames(data_transposed) <- NULL  # Optional: clear rownames
 
-# Optional: log-transform to help linearity (commented out if not needed)
-# data_transposed <- log10(data_transposed + 1e-6)
-
 # Compute distance matrix among metals
 cor_dist <- vegdist(data_transposed |> select(-Metal), method = "bray")
 
