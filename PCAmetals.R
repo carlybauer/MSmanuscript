@@ -183,11 +183,14 @@ for (i in 1:500) {
     slice_sample(n = 10) %>%
     ungroup()
   
+  
   sub_metals <- sub_data %>% select(starts_with("T"))
   sub_metals_hel <- decostand(sub_metals, method = "hellinger")
   sub_euc <- vegdist(sub_metals_hel, method = "euclidean")
+  sub_bray <- vegdist(sub_metals_hel, method = "bray")
   
-  disp <- betadisper(sub_euc, group = sub_data$Reservoir, type = "centroid")
+  
+  disp <- betadisper(sub_bray, group = sub_data$Reservoir, type = "centroid") #change for method 
   
   # Save distances to centroid for each group
   dist_df <- data.frame(Reservoir = sub_data$Reservoir,
@@ -202,7 +205,8 @@ for (i in 1:500) {
 
 # Compare dispersion
 wilcox.test(var_results$fcr_disp, var_results$bvr_disp)
-## p-value < 2.2e-16 
+## p-value < 2.2e-16 using euclidian, but this doesnt make sense since I'm distancing using bray in NMDS
+## p-value = 0.6857 using bray, not significantly different 
 
 #summarize/visualize
 disp_long <- var_results %>%
