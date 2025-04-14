@@ -254,7 +254,61 @@ ggplot(metal_scores, aes(x = NMDS1, y = NMDS2, label = Metal)) +
   theme_minimal() +
   labs(title = "NMDS of Metal Similarity",
        x = "NMDS1", y = "NMDS2")
- 
+
+### OBSERVING METAL PATTERNS SEPARATE IN RESERVOIRS
+# repetition of above
+FCRmetals1 <- metals %>%
+  mutate(Year = year(DateTime)) %>% 
+  filter(Reservoir == "FCR", Site == 50, Year >= 2020) %>%
+  select(starts_with("T")) %>%  # Keep only metal columns
+  na.omit()
+
+BVRmetals1 <- metals %>%
+  mutate(Year = year(DateTime)) %>% 
+  filter(Reservoir == "BVR", Site == 50, Year >= 2020) %>%
+  select(starts_with("T")) %>%
+  na.omit()
+
+# Transpose so rows = metals, columns = samples
+FCR_t <- as.data.frame(t(FCRmetals1))
+FCR_t$Metal <- rownames(FCR_t)
+rownames(FCR_t) <- NULL
+
+BVR_t <- as.data.frame(t(BVRmetals1))
+BVR_t$Metal <- rownames(BVR_t)
+rownames(BVR_t) <- NULL
+
+# FCR NMDS
+# distancing matrix applied
+FCR_dist <- vegdist(FCR_t |> select(-Metal), method = "bray")
+FCR_NMDS <- metaMDS(FCR_dist, k = 2, trymax = 20)
+
+FCR_scores <- as.data.frame(scores(FCR_NMDS, display = "sites"))
+FCR_scores$Metal <- FCR_t$Metal
+
+# BVR NMDS
+# distancing matrix applied
+BVR_dist <- vegdist(BVR_t |> select(-Metal), method = "bray")
+BVR_NMDS <- metaMDS(BVR_dist, k = 2, trymax = 20)
+
+BVR_scores <- as.data.frame(scores(BVR_NMDS, display = "sites"))
+BVR_scores$Metal <- BVR_t$Metal
+
+# FCR Plot
+ggplot(FCR_scores, aes(x = NMDS1, y = NMDS2, label = Metal)) +
+  geom_point(color = "#56B4E9", size = 3) +
+  geom_text(nudge_y = 0.05) +
+  theme_minimal() +
+  labs(title = "FCR",
+       x = "NMDS1", y = "NMDS2")
+
+# BVR Plot
+ggplot(BVR_scores, aes(x = NMDS1, y = NMDS2, label = Metal)) +
+  geom_point(color = "#D55E00", size = 3) +
+  geom_text(nudge_y = 0.05) +
+  theme_minimal() +
+  labs(title = "BVR",
+       x = "NMDS1", y = "NMDS2")
 
 ## CEB stops here, stuff below was just play when first figuring out PCA
  #::::::::::::::::::::::::::::::::::::::::::::::::::::::
