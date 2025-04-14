@@ -187,10 +187,10 @@ for (i in 1:500) {
   sub_metals <- sub_data %>% select(starts_with("T"))
   sub_metals_hel <- decostand(sub_metals, method = "hellinger")
   sub_euc <- vegdist(sub_metals_hel, method = "euclidean")
-  sub_bray <- vegdist(sub_metals_hel, method = "bray")
+  #sub_bray <- vegdist(sub_metals_hel, method = "bray")
   
   
-  disp <- betadisper(sub_bray, group = sub_data$Reservoir, type = "centroid") #change for method 
+  disp <- betadisper(sub_euc, group = sub_data$Reservoir, type = "centroid") #change for method 
   
   # Save distances to centroid for each group
   dist_df <- data.frame(Reservoir = sub_data$Reservoir,
