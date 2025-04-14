@@ -119,9 +119,21 @@ data2 = data1 |>
 #I JUST RAN OUT OF TIME, BUT CARLY THE NEXT STEP IS TO COLOR THE POINTS BY RESERVOIR-
 # YOU CAN CLEARLY SEE CLUSTERING OF FCR VS BVR HERE. YOU CAN THEN ALSO COMPARE THE POLYGONS
  #SIMILAR TO WHAT HEATHER DID STATISTICALLY.
-  # Extract site scores and add Reservoir info
+   # Extract site scores and add Reservoir info
  nmds_scores <- as.data.frame(scores(example_NMDS, display = "sites"))
  nmds_scores$Reservoir <- original_rownames  # your saved group info
+ 
+ ## CALCULATE CENTROID FOR EACH RESERVOIR
+ #gives (x,y) coordinates for each group's center
+ centroids <- aggregate(cbind(NMDS1, NMDS2) ~ Reservoir, data = nmds_scores, FUN = mean) 
+ # For each reservoir, it calculates the mean NMDS1 and mean NMDS2 coordinate (centroid of all its points in NMDS space)
+ print(centroids) 
+ 
+ 
+ ## CALCULATE EUCLIDEAN DISTANCE BETWEEN TWO CENTROIDS
+ # Use dist() if just two groups:
+ centroid_distance <- dist(centroids[, c("NMDS1", "NMDS2")])
+ print(centroid_distance)
  
  # # Plot with ggplot2
  ggplot(nmds_scores, aes(x = NMDS1, y = NMDS2, color = Reservoir)) +
@@ -150,17 +162,6 @@ data2 = data1 |>
         pch = 4, cex = 1.5, lwd = 1, 
         col = c("black"))  # Adjust to match order
  
-
-## CALCULATE CENTROID FOR EACH RESERVOIR
- #gives (x,y) coordinates for each group's center
-centroids <- aggregate(cbind(NMDS1, NMDS2) ~ Reservoir, data = nmds_scores, FUN = mean)
-print(centroids) 
- 
-
-## CALCULATE EUCLIDEAN DISTANCE BETWEEN TWO CENTROIDS
-# Use dist() if just two groups:
-centroid_distance <- dist(centroids[, c("NMDS1", "NMDS2")])
-print(centroid_distance)
 
 ### FOLLOWING SIMILAR TO HEATHER
 ## not sure what method is right
@@ -216,6 +217,8 @@ ggplot(var_results, aes(x = centroid_dist)) +
   labs(x = "Distance between centroids (FCR vs BVR)",
        y = "Frequency",
        title = "Bootstrapped centroid distances")
+
+
  
 
 ## CEB stops here, stuff below was just play when first figuring out PCA
