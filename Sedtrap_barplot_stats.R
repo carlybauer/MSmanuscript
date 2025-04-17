@@ -172,6 +172,7 @@ fluxes2 <- fluxes2 %>%
 
 # filter for finding total cumulative flux in each reservoir by year 
 # first make dataframe of just point pre turnover for FCR and BVR in the hypo
+# removing dates where we have extra points sampled in FCR compared to BVR based on code below that is commented out
 FluxHypPre <- fluxesO2 %>% 
   filter(Layer == 'Hypolimnion' & TO == 'Pre' & Date != as.Date("2021-06-07") & Date != as.Date("2022-10-17")) 
 # 
