@@ -74,7 +74,7 @@ print(heatSr)
 ### HOx on dates 
 # load csv to add lines to fancy plot below
 #create new frames to add TO lines
-HOxBoxes <- read_csv('HOxOnDates.csv') %>% 
+HOxBoxes <- read_csv('https://raw.githubusercontent.com/carlybauer/MSmanuscript/refs/heads/main/HOxOnDates.csv') %>% 
   mutate(Group = rownames(.),
          Reservoir = 'FCR',
          Year = year(HOxOn),
