@@ -1,2 +1,2 @@
 # MSmanuscript
-Scripts used to do M.S. and manuscript plots and calculations
+Scripts used to do thesis and manuscript plots and calculations
