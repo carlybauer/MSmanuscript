@@ -39,6 +39,18 @@ process_reservoir_data <- function(reservoir, year, start_date, end_date) {
   metal <- read_csv("https://raw.githubusercontent.com/carlybauer/Reservoirs/refs/heads/master/Data/DataAlreadyUploadedToEDI/EDIProductionFiles/MakeEMLmetals/2024/Metals_2014_2023.csv")
   metal$DateTime <- as.POSIXct(metal$DateTime)
   
+  # # this gets rid of any values that we flagged as abnormally high in the data
+  # # not including this because it gets rid of a lot of BVR values
+  # metalsflag <- metal %>% 
+  #   filter(
+  #     Flag_TAl_mgL != 8 & Flag_SAl_mgL != 8 & Flag_TAl_mgL != 68 & Flag_SAl_mgL != 68,
+  #     Flag_TFe_mgL != 8 & Flag_SFe_mgL != 8 & Flag_TFe_mgL != 68 & Flag_SFe_mgL != 68,
+  #     Flag_TMn_mgL != 8 & Flag_SMn_mgL != 8 & Flag_TMn_mgL != 68 & Flag_SMn_mgL != 68,
+  #     Flag_TCu_mgL != 8 & Flag_SCu_mgL != 8 & Flag_TCu_mgL != 68 & Flag_SCu_mgL != 68,
+  #     Flag_TSr_mgL != 8 & Flag_SSr_mgL != 8 & Flag_TSr_mgL != 68 & Flag_SSr_mgL != 68,
+  #     Flag_TBa_mgL != 8 & Flag_SBa_mgL != 8 & Flag_TBa_mgL != 68 & Flag_SBa_mgL != 68)
+  
+  
   metals <- metal %>%
     mutate(Year = year(DateTime), 
            Date_real = date(DateTime)) %>%
@@ -49,6 +61,8 @@ process_reservoir_data <- function(reservoir, year, start_date, end_date) {
     select(Date_real, Year, Depth_m, TFe_mgL, SFe_mgL, TMn_mgL, SMn_mgL, SBa_mgL, TBa_mgL, 
            SCu_mgL, TCu_mgL, SSr_mgL, TSr_mgL, SAl_mgL, TAl_mgL) %>%
     drop_na()
+  
+ 
   
   metals <- as_tsibble(metals) %>% #recognize data as time series 
     mutate(Week = week(Date_real))
