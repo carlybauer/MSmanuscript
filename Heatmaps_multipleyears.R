@@ -74,12 +74,17 @@ print(heatSr)
 ### HOx on dates 
 # load csv to add lines to fancy plot below
 #create new frames to add TO lines
-HOxBoxes <- read_csv('https://raw.githubusercontent.com/carlybauer/MSmanuscript/refs/heads/main/HOxOnDates.csv') %>% 
+HOxBoxes <- read_csv('HOxOnDates.csv') %>% 
   mutate(Group = rownames(.),
          Reservoir = 'FCR',
          Year = year(HOxOn),
          DOYon = yday(HOxOn),
          DOYoff = yday(HOxOff))
+
+### Turnover dates 
+# load csv to add lines to fancy plot below
+#create new frames to add TO lines
+TO <- read_csv('TO_Dates.csv')
 
 
 
@@ -94,8 +99,8 @@ TBa <- heatTBa +
   scale_fill_gradientn(colours = blue2green2red(60),
                        limits = c(0.0030, 0.112300000), # makes same gradient with min and max T and S
                        na.value = "gray")+
-  geom_vline(data = subset(HOxBoxes, Reservoir == "FCR"), aes(xintercept = as.numeric(HOxOn)), 
-             linetype = "solid", color = 'black', linewidth = 0.5) +  
+  geom_vline(data = TO, aes(xintercept = as.numeric(Date)), 
+             linetype = "solid", color = 'black', linewidth = 0.5)+ 
   theme(plot.title = element_text(size=10, hjust = 0),
         axis.text=element_text(size=10), #change font size of axis text
         axis.title=element_text(size=10), #change font size of axis titles
@@ -114,8 +119,8 @@ SBa <- heatSBa +
   scale_fill_gradientn(colours = blue2green2red(60),
                        limits = c(0.0030, 0.112300000), # makes same gradient with min and max T and S
                        na.value = "gray")+
-  geom_vline(data = subset(HOxBoxes, Reservoir == "FCR"), aes(xintercept = as.numeric(HOxOn)), 
-             linetype = "solid", color = 'black', linewidth = 0.5) +  
+  geom_vline(data = TO, aes(xintercept = as.numeric(Date)), 
+             linetype = "solid", color = 'black', linewidth = 0.5)+  
   # adjust the size and the position of the title
   theme(plot.title = element_text(size=10, hjust = 0),
         axis.text=element_text(size=10), #change font size of axis text
@@ -145,8 +150,8 @@ TSr <- heatTSr +
   scale_fill_gradientn(colours = blue2green2red(60),
                        limits = c(0.005287647, 0.0267615), # makes same gradient with min and max T and S
                        na.value = "gray")+
-  geom_vline(data = subset(HOxBoxes, Reservoir == "FCR"), aes(xintercept = as.numeric(HOxOn)), 
-             linetype = "solid", color = 'black', linewidth = 0.5) +  
+  geom_vline(data = TO, aes(xintercept = as.numeric(Date)), 
+             linetype = "solid", color = 'black', linewidth = 0.5)+ 
   theme(plot.title = element_text(size=10, hjust = 0),
         axis.text=element_text(size=10), #change font size of axis text
         axis.title=element_text(size=10), #change font size of axis titles
@@ -165,8 +170,8 @@ SSr <- heatSSr +
   scale_fill_gradientn(colours = blue2green2red(60),
                        limits = c(0.005287647, 0.0267615), # makes same gradient with min and max T and S
                        na.value = "gray")+
-  geom_vline(data = subset(HOxBoxes, Reservoir == "FCR"), aes(xintercept = as.numeric(HOxOn)), 
-             linetype = "solid", color = 'black', linewidth = 0.5) +  
+  geom_vline(data = TO, aes(xintercept = as.numeric(Date)), 
+             linetype = "solid", color = 'black', linewidth = 0.5)+ 
   # adjust the size and the position of the title
   theme(plot.title = element_text(size=10, hjust = 0),
         axis.text=element_text(size=10), #change font size of axis text
@@ -195,8 +200,8 @@ TCu <- heatTCu +
   scale_fill_gradientn(colours = blue2green2red(60),
                        limits = c(0.0008807913, 0.0043056011), # makes same gradient with min and max T and S
                        na.value = "gray")+
-  geom_vline(data = subset(HOxBoxes, Reservoir == "FCR"), aes(xintercept = as.numeric(HOxOn)), 
-             linetype = "solid", color = 'black', linewidth = 0.5) +  
+  geom_vline(data = TO, aes(xintercept = as.numeric(Date)), 
+             linetype = "solid", color = 'black', linewidth = 0.5)+  
   theme(plot.title = element_text(size=10, hjust = 0),
         axis.text=element_text(size=10), #change font size of axis text
         axis.title=element_text(size=10), #change font size of axis titles
@@ -215,8 +220,8 @@ SCu <- heatSCu +
   scale_fill_gradientn(colours = blue2green2red(60),
                        limits = c(0.0008807913, 0.0043056011), # makes same gradient with min and max T and S
                        na.value = "gray")+
-  geom_vline(data = subset(HOxBoxes, Reservoir == "FCR"), aes(xintercept = as.numeric(HOxOn)), 
-             linetype = "solid", color = 'black', linewidth = 0.5) +  
+  geom_vline(data = TO, aes(xintercept = as.numeric(Date)), 
+             linetype = "solid", color = 'black', linewidth = 0.5)+  
   # adjust the size and the position of the title
   theme(plot.title = element_text(size=10, hjust = 0),
         axis.text=element_text(size=10), #change font size of axis text
@@ -247,8 +252,8 @@ TAl <- heatTAl +
                        limits = c(0.0010, 0.6884), # makes same gradient with min and max T and S
                        na.value = "gray", 
                        values=rescale(c(0.0010,0.1,0.6884))) +
-  geom_vline(data = subset(HOxBoxes, Reservoir == "FCR"), aes(xintercept = as.numeric(HOxOn)), 
-             linetype = "solid", color = 'black', linewidth = 0.5) +  
+  geom_vline(data = TO, aes(xintercept = as.numeric(Date)), 
+             linetype = "solid", color = 'black', linewidth = 0.5)+  
   theme(plot.title = element_text(size=10, hjust = 0),
         axis.text=element_text(size=10), #change font size of axis text
         axis.title=element_text(size=10), #change font size of axis titles
@@ -268,8 +273,8 @@ SAl <- heatSAl +
                        limits = c(0.0010, 0.6884), # makes same gradient with min and max T and S
                        na.value = "gray", 
                        values=rescale(c(0.0010,0.1,0.6884))) +
-  geom_vline(data = subset(HOxBoxes, Reservoir == "FCR"), aes(xintercept = as.numeric(HOxOn)), 
-             linetype = "solid", color = 'black', linewidth = 0.5) +  
+  geom_vline(data = TO, aes(xintercept = as.numeric(Date)), 
+             linetype = "solid", color = 'black', linewidth = 0.5)+ 
   # adjust the size and the position of the title
   theme(plot.title = element_text(size=10, hjust = 0),
         axis.text=element_text(size=10), #change font size of axis text
