@@ -112,7 +112,7 @@ print(TBa)
 
 SBa <- heatSBa + 
   # add a title
-  ggtitle("Soluble Ba") +  
+  ggtitle("Dissolved Ba") +  
   theme(panel.grid = element_blank()) +
   # change the x axis labels depending on how many breaks you want and how you want it labeled
   scale_x_date(date_breaks = "3 months", date_labels = "%b") +
@@ -163,7 +163,7 @@ print(TSr)
 
 SSr <- heatSSr + 
   # add a title
-  ggtitle("Soluble Sr") +  
+  ggtitle("Dissolved Sr") +  
   theme(panel.grid = element_blank()) +
   # change the x axis labels depending on how many breaks you want and how you want it labeled
   scale_x_date(date_breaks = "3 months", date_labels = "%b") +
@@ -213,7 +213,7 @@ print(TCu)
 
 SCu <- heatSCu + 
   # add a title
-  ggtitle("Soluble Cu") +  
+  ggtitle("Dissolved Cu") +  
   theme(panel.grid = element_blank()) +
   # change the x axis labels depending on how many breaks you want and how you want it labeled
   scale_x_date(date_breaks = "3 months", date_labels = "%b") +
@@ -265,7 +265,7 @@ print(TAl)
 
 SAl <- heatSAl + 
   # add a title
-  ggtitle("Soluble Al") +  
+  ggtitle("Dissolved Al") +  
   theme(panel.grid = element_blank()) +
   # change the x axis labels depending on how many breaks you want and how you want it labeled
   scale_x_date(date_breaks = "3 months", date_labels = "%b") +

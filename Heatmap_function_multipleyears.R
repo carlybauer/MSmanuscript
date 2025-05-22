@@ -191,7 +191,7 @@ heatmap_ratio <- function(data, reservoirs, site, z){
     #           aes(xmin = HOxOn, xmax = HOxOff, ymin = -Inf, ymax = Inf, fill = NULL, color = NULL), 
     #           alpha = 0.2) +  
     #geom_vline(xintercept = FCRHOx$Date, linetype = 1, colour = '#D55E00') + #HOx lines!
-    labs(x = NULL, y = "Depth (m)", title = fig_title, fill = ("Soluble:Total")) +
+    labs(x = NULL, y = "Depth (m)", title = fig_title, fill = ("Dissolved:Total")) +
     theme_bw() 
   
   return(p1)
