@@ -61,10 +61,36 @@ BVR2023 <- process_reservoir_data(reservoir = "BVR", year = 2023,
 #     as.data.frame(lapply(merged_standard, as.vector)) %>%
 #     as_tsibble(index = Date_fake)
 ##::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::##
-##### if running function to save standardized data then save as .RData and load 
-save(BVR2023, file = "BVR2023_ARIMA_0612_1106_all.RData")
-load("BVR2023_ARIMA_0612_1106_all.RData")
-  
+##### if running function to save standardized data then save as .RData or .csv and load 
+# save(BVR2023, file = "BVR2023_ARIMA_0612_1106_all.RData")
+# load("BVR2023_ARIMA_0612_1106_all.RData")
+FCR2020 <- read_csv("FCR2020.csv")
+FCR2021 <- read_csv("FCR2021.csv")
+FCR2022 <- read_csv("FCR2022.csv")
+FCR2023 <- read_csv("FCR2023.csv")
+
+BVR2020 <- read_csv("BVR2020.csv")
+BVR2023 <- read_csv("BVR2023.csv")
+##::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::##
+##### save csv of variables interested in for each model 
+# library(readr)
+# 
+# # Create a new data frame with only the desired columns
+# BVR2023_selected <- BVR2023 %>%
+#   select(
+#          TAl_mgL,
+#          TBa_mgL,
+#          TCu_mgL,
+#          TSr_mgL,
+#          DO_mgL,
+#          pH,
+#          Turbidity_NTU,
+#          Lag1_Rain_Total_mm) %>%
+#   # Convert matrix columns to numeric vectors
+#   mutate(across(where(~ is.matrix(.x) || is.array(.x)), ~ as.vector(.x)))
+# 
+# # Save to CSV
+# write_csv(BVR2023_selected, "BVR2023.csv")
   
 ##::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::##
 # variables to include in model run
@@ -78,8 +104,8 @@ load("BVR2023_ARIMA_0612_1106_all.RData")
 # BVR 2022: nothing because too many interpolated metal and env variables
 # BVR 2023: Tmetal_mgL ~ DO_mgL + pH + Turbidity_NTU + Lag1_Rain_Total_mm
 # Fit ARIMA model with metal as the response and other variables as regressors
-fit <- BVR2023 %>%
-  model(ARIMA(TSr_mgL ~ DO_mgL + pH + Turbidity_NTU + Lag1_Rain_Total_mm))
+fit <- FCR2020 %>%
+  model(ARIMA(TAl_mgL ~ DO_mgL  + Turbidity_NTU + Lag1_Rain_Total_mm +Lag1_Q_Sum_cms))
 
 # View model summary, including coefficients
 fit_report <- report(fit)
